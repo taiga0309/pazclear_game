@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PAZCLEAR Icon Generator - Custom Image</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            text-align: center; 
+            background: #f0f0f0;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .upload-area {
+            border: 3px dashed #1976d2;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .upload-area:hover {
+            background: #e3f2fd;
+            border-color: #1565c0;
+        }
+        .upload-area.dragover {
+            background: #e3f2fd;
+            border-color: #1565c0;
+            transform: scale(1.02);
+        }
+        canvas { 
+            border: 2px solid #1976d2; 
+            margin: 20px; 
+            border-radius: 10px;
+            max-width: 100%;
+        }
+        button { 
+            padding: 15px 25px; 
+            margin: 10px; 
+            font-size: 16px; 
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        .download-btn {
+            background: #4caf50;
+            color: white;
+        }
+        .preview-btn {
+            background: #2196f3;
+            color: white;
+        }
+        .reset-btn {
+            background: #ff9800;
+            color: white;
+        }
+        .controls {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        .slider-group {
+            margin: 15px 0;
+            text-align: left;
+        }
+        .slider-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="range"] {
+            width: 100%;
+            margin: 10px 0;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .status {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        .preview-icon {
+            width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 PAZCLEAR Custom Icon Generator</h1>
+        <p>Upload your character image and generate PWA icons</p>
+        
+        <!-- アップロード エリア -->
+        <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+            <div id="uploadText">
+                <h3>📁 Upload Your Character Image</h3>
+                <p>Click here or drag & drop your image<br>
+                (PNG, JPG, GIF supported)</p>
+            </div>
+            <input type="file" id="fileInput" accept="image/*">
+        </div>
+        
+        <!-- コントロール -->
+        <div class="controls" id="controls" style="display: none;">
+            <h3>🎨 Customize Your Icon</h3>
+            
+            <div class="slider-group">
+                <label for="characterSize">Character Size: <span id="sizeValue">60%</span></label>
+                <input type="range" id="characterSize" min="20" max="100" value="60">
+            </div>
+            
+            <div class="slider-group">
+                <label for="characterX">Horizontal Position: <span id="xValue">50%</span></label>
+                <input type="range" id="characterX" min="0" max="100" value="50">
+            </div>
+            
+            <div class="slider-group">
+                <label for="characterY">Vertical Position: <span id="yValue">40%</span></label>
+                <input type="range" id="characterY" min="0" max="100" value="40">
+            </div>
+            
+            <div class="slider-group">
+                <label for="backgroundStyle">Background Style:</label>
+                <select id="backgroundStyle">
+                    <option value="gradient">Blue Gradient</option>
+                    <option value="solid">Solid Blue</option>
+                    <option value="white">White Background</option>
+                    <option value="transparent">Transparent</option>
+                </select>
+            </div>
+            
+            <div class="slider-group">
+                <label>
+                    <input type="checkbox" id="showText" checked> Show PAZCLEAR Text
+                </label>
+            </div>
+            
+            <div class="slider-group">
+                <label>
+                    <input type="checkbox" id="showBorder" checked> Add Border Effect
+                </label>
+            </div>
+        </div>
+        
+        <!-- プレビュー -->
+        <canvas id="canvas" width="512" height="512"></canvas>
+        
+        <!-- プレビューグリッド -->
+        <div class="preview-grid" id="previewGrid" style="display: none;">
+            <div>72x72<br><canvas class="preview-icon" width="72" height="72"></canvas></div>
+            <div>96x96<br><canvas class="preview-icon" width="96" height="96"></canvas></div>
+            <div>128x128<br><canvas class="preview-icon" width="128" height="128"></canvas></div>
+            <div>192x192<br><canvas class="preview-icon" width="192" height="192"></canvas></div>
+        </div>
+        
+        <!-- ボタン -->
+        <div>
+            <button class="download-btn" onclick="generateAllIcons()" id="downloadBtn" disabled>
+                📥 Download All Icons (8 files)
+            </button>
+            <button class="preview-btn" onclick="updatePreview()">
+                🔄 Update Preview
+            </button>
+            <button class="reset-btn" onclick="resetAll()">
+                🗑️ Reset
+            </button>
+        </div>
+        
+        <div class="status" id="status">
+            Upload an image to get started
+        </div>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const statusDiv = document.getElementById('status');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const controls = document.getElementById('controls');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const previewGrid = document.getElementById('previewGrid');
+        
+        let uploadedImage = null;
+        let settings = {
+            size: 60,
+            x: 50,
+            y: 40,
+            backgroundStyle: 'gradient',
+            showText: true,
+            showBorder: true
+        };
+        
+        // ファイルアップロード処理
+        fileInput.addEventListener('change', handleFileUpload);
+        
+        // ドラッグ&ドロップ
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+        
+        // スライダー変更イベント
+        document.getElementById('characterSize').addEventListener('input', (e) => {
+            settings.size = parseInt(e.target.value);
+            document.getElementById('sizeValue').textContent = settings.size + '%';
+            updatePreview();
+        });
+        
+        document.getElementById('characterX').addEventListener('input', (e) => {
+            settings.x = parseInt(e.target.value);
+            document.getElementById('xValue').textContent = settings.x + '%';
+            updatePreview();
+        });
+        
+        document.getElementById('characterY').addEventListener('input', (e) => {
+            settings.y = parseInt(e.target.value);
+            document.getElementById('yValue').textContent = settings.y + '%';
+            updatePreview();
+        });
+        
+        document.getElementById('backgroundStyle').addEventListener('change', (e) => {
+            settings.backgroundStyle = e.target.value;
+            updatePreview();
+        });
+        
+        document.getElementById('showText').addEventListener('change', (e) => {
+            settings.showText = e.target.checked;
+            updatePreview();
+        });
+        
+        document.getElementById('showBorder').addEventListener('change', (e) => {
+            settings.showBorder = e.target.checked;
+            updatePreview();
+        });
+        
+        function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+        
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                alert('Please upload an image file (PNG, JPG, GIF)');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    uploadedImage = img;
+                    controls.style.display = 'block';
+                    downloadBtn.disabled = false;
+                    previewGrid.style.display = 'grid';
+                    uploadArea.style.display = 'none';
+                    statusDiv.textContent = 'Image loaded! Customize your icon below.';
+                    updatePreview();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        function drawIcon(targetCanvas = canvas) {
+            const targetCtx = targetCanvas.getContext('2d');
+            const size = targetCanvas.width;
+            
+            // クリア
+            targetCtx.clearRect(0, 0, size, size);
+            
+            // 背景
+            drawBackground(targetCtx, size);
+            
+            // キャラクター画像
+            if (uploadedImage) {
+                drawCharacter(targetCtx, size);
+            }
+            
+            // ボーダー効果
+            if (settings.showBorder) {
+                drawBorder(targetCtx, size);
+            }
+            
+            // テキスト
+            if (settings.showText) {
+                drawText(targetCtx, size);
+            }
+        }
+        
+        function drawBackground(ctx, size) {
+            switch (settings.backgroundStyle) {
+                case 'gradient':
+                    const gradient = ctx.createLinearGradient(0, 0, size, size);
+                    gradient.addColorStop(0, '#1976d2');
+                    gradient.addColorStop(1, '#42a5f5');
+                    ctx.fillStyle = gradient;
+                    break;
+                case 'solid':
+                    ctx.fillStyle = '#1976d2';
+                    break;
+                case 'white':
+                    ctx.fillStyle = '#ffffff';
+                    break;
+                case 'transparent':
+                    return; // 背景なし
+            }
+            
+            if (settings.backgroundStyle !== 'transparent') {
+                ctx.beginPath();
+                ctx.roundRect(0, 0, size, size, size * 0.15);
+                ctx.fill();
+            }
+        }
+        
+        function drawCharacter(ctx, size) {
+            const charSize = (size * settings.size) / 100;
+            const x = (size * settings.x) / 100 - charSize / 2;
+            const y = (size * settings.y) / 100 - charSize / 2;
+            
+            // 影効果
+            ctx.save();
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+            ctx.shadowBlur = size * 0.02;
+            ctx.shadowOffsetX = size * 0.01;
+            ctx.shadowOffsetY = size * 0.01;
+            
+            // キャラクター描画
+            ctx.drawImage(uploadedImage, x, y, charSize, charSize);
+            ctx.restore();
+        }
+        
+        function drawBorder(ctx, size) {
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = size * 0.01;
+            ctx.beginPath();
+            ctx.roundRect(size * 0.02, size * 0.02, size * 0.96, size * 0.96, size * 0.13);
+            ctx.stroke();
+        }
+        
+        function drawText(ctx, size) {
+            const textColor = settings.backgroundStyle === 'white' ? '#1976d2' : 'white';
+            
+            // PAZ
+            ctx.fillStyle = textColor;
+            ctx.font = `bold ${size * 0.09}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillText('PAZ', size / 2, size * 0.8);
+            
+            // CLEAR
+            ctx.font = `bold ${size * 0.055}px Arial`;
+            ctx.fillStyle = settings.backgroundStyle === 'white' ? '#666' : 'rgba(255, 255, 255, 0.9)';
+            ctx.fillText('CLEAR', size / 2, size * 0.9);
+        }
+        
+        function updatePreview() {
+            if (!uploadedImage) return;
+            
+            drawIcon();
+            
+            // 小さなプレビューも更新
+            const previewCanvases = document.querySelectorAll('.preview-icon');
+            previewCanvases.forEach(canvas => {
+                drawIcon(canvas);
+            });
+        }
+        
+        function generateAllIcons() {
+            if (!uploadedImage) {
+                alert('Please upload an image first!');
+                return;
+            }
+            
+            const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+            let completed = 0;
+            
+            statusDiv.textContent = 'Generating icons...';
+            
+            sizes.forEach((size, index) => {
+                setTimeout(() => {
+                    const tempCanvas = document.createElement('canvas');
+                    tempCanvas.width = size;
+                    tempCanvas.height = size;
+                    
+                    drawIcon(tempCanvas);
+                    
+                    const link = document.createElement('a');
+                    link.download = `icon-${size}x${size}.png`;
+                    link.href = tempCanvas.toDataURL('image/png');
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    completed++;
+                    statusDiv.textContent = `Generated ${completed}/${sizes.length} icons...`;
+                    
+                    if (completed === sizes.length) {
+                        statusDiv.innerHTML = '✅ All custom icons generated!<br>Upload them to your GitHub repository.';
+                    }
+                }, index * 300);
+            });
+        }
+        
+        function resetAll() {
+            uploadedImage = null;
+            controls.style.display = 'none';
+            downloadBtn.disabled = true;
+            previewGrid.style.display = 'none';
+            uploadArea.style.display = 'block';
+            fileInput.value = '';
+            statusDiv.textContent = 'Upload an image to get started';
+            ctx.clearRect(0, 0, 512, 512);
+            
+            // スライダーリセット
+            document.getElementById('characterSize').value = 60;
+            document.getElementById('characterX').value = 50;
+            document.getElementById('characterY').value = 40;
+            document.getElementById('sizeValue').textContent = '60%';
+            document.getElementById('xValue').textContent = '50%';
+            document.getElementById('yValue').textContent = '40%';
+            settings = {
+                size: 60,
+                x: 50,
+                y: 40,
+                backgroundStyle: 'gradient',
+                showText: true,
+                showBorder: true
+            };
+        }
+    </script>
+</body>
+</html>
