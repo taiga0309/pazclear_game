@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>PAZCLEAR: Biofilm Breaker</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#1976d2">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="PAZCLEAR">
+    <meta name="description" content="Industrial water system microbial control game">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512x512.png">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
+
+        .container {
+            max-width: 100%;
+            width: 100%;
+            height: 100vh;
+            background: white;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .title-screen {
+            text-align: center;
+            padding: 60px 20px 40px 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: clamp(2em, 8vw, 3.5em);
+            font-weight: bold;
+            color: #1976d2;
+            margin-bottom: 15px;
+            letter-spacing: 3px;
+        }
+
+        .subtitle {
+            font-size: clamp(1.2em, 5vw, 1.8em);
+            color: #424242;
+            margin-bottom: 40px;
+            line-height: 1.3;
+        }
+
+        .start-btn {
+            background: #1976d2;
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: clamp(1.1em, 4vw, 1.3em);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(25, 118, 210, 0.3);
+            min-height: 60px;
+            min-width: 200px;
+            touch-action: manipulation;
+        }
+
+        .start-btn:hover, .start-btn:active {
+            background: #1565c0;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(25, 118, 210, 0.4);
+        }
+
+        .install-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(25, 118, 210, 0.1);
+            border-radius: 12px;
+            max-width: 400px;
+        }
+
+        .install-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1em;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 5px;
+            min-height: 50px;
+            touch-action: manipulation;
+        }
+
+        .install-instructions {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 15px;
+            text-align: left;
+            line-height: 1.4;
+        }
+
+        .game-screen {
+            display: none;
+            padding: 15px;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #1976d2;
+            padding: 10px 0;
+            background: rgba(25, 118, 210, 0.1);
+            border-radius: 8px;
+        }
+
+        .game-header h2 {
+            font-size: clamp(1.2em, 5vw, 1.5em);
+            margin-bottom: 5px;
+        }
+
+        .stats {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .player-stats, .enemy-stats {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .player-stats h3, .enemy-stats h3 {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            color: #1976d2;
+        }
+
+        .hp-bar {
+            width: 100%;
+            height: 25px;
+            background: #ddd;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 8px 0;
+            border: 2px solid #ccc;
+        }
+
+        .hp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #66bb6a);
+            transition: width 0.5s ease;
+            border-radius: 13px;
+        }
+
+        .enemy-hp-fill {
+            background: linear-gradient(90deg, #f44336, #ef5350);
+        }
+
+        .biofilm-indicator {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        .biofilm-active {
+            background: #ff9800;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .biofilm-inactive {
+            background: #4caf50;
+            color: white;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #2196f3, #1976d2);
+            color: white;
+            border: none;
+            padding: 18px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: clamp(0.9em, 3.5vw, 1em);
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+            min-height: 65px;
+            touch-action: manipulation;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.4);
+        }
+
+        .action-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .ultimate-btn {
+            background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+            grid-column: 1 / -1;
+            box-shadow: 0 4px 12px rgba(156, 39, 176, 0.3);
+        }
+
+        .ultimate-btn:active {
+            box-shadow: 0 2px 8px rgba(156, 39, 176, 0.4);
+        }
+
+        .battle-log {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 15px;
+            height: 180px;
+            overflow-y: auto;
+            font-size: 0.9em;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .log-entry {
+            margin-bottom: 8px;
+            padding: 5px 8px;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.7);
+        }
+
+        .log-player {
+            color: #1976d2;
+            font-weight: bold;
+        }
+
+        .log-enemy {
+            color: #f44336;
+            font-weight: bold;
+        }
+
+        .log-system {
+            color: #666;
+            font-style: italic;
+        }
+
+        .victory-screen, .defeat-screen {
+            display: none;
+            text-align: center;
+            padding: 60px 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .victory-screen h2 {
+            color: #4caf50;
+            font-size: clamp(1.8em, 6vw, 2.5em);
+            margin-bottom: 20px;
+        }
+
+        .defeat-screen h2 {
+            color: #f44336;
+            font-size: clamp(1.8em, 6vw, 2.5em);
+            margin-bottom: 20px;
+        }
+
+        .victory-screen, .defeat-screen {
+            display: none;
+        }
+
+        .victory-screen.active, .defeat-screen.active {
+            display: flex;
+        }
+
+        /* Loading indicator */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1976d2;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .container {
+                border-radius: 0;
+            }
+            
+            .game-screen {
+                padding: 10px;
+            }
+            
+            .actions {
+                gap: 10px;
+            }
+            
+            .action-btn {
+                padding: 15px 8px;
+                font-size: 0.85em;
+                min-height: 60px;
+            }
+            
+            .battle-log {
+                height: 150px;
+                font-size: 0.85em;
+            }
+        }
+
+        @media (orientation: landscape) and (max-height: 500px) {
+            .title-screen {
+                padding: 20px;
+            }
+            
+            .game-header {
+                margin-bottom: 10px;
+                padding: 5px 0;
+            }
+            
+            .stats {
+                margin-bottom: 10px;
+            }
+            
+            .battle-log {
+                height: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="container">
+        <!-- Title Screen -->
+        <div id="titleScreen" class="title-screen">
+            <div class="logo">CHEMIPAZ</div>
+            <div class="subtitle">PAZCLEAR: Biofilm Breaker</div>
+            <button class="start-btn" onclick="startGame()">START MISSION</button>
+            
+            <div class="install-section">
+                <button class="install-btn" id="installBtn" style="display: none;" onclick="installApp()">
+                    📱 Install App
+                </button>
+                <div class="install-instructions">
+                    <strong>Install Instructions:</strong><br>
+                    <strong>📱 iPhone/iPad:</strong> Tap Share → Add to Home Screen<br>
+                    <strong>🤖 Android:</strong> Tap Menu (⋮) → Add to Home screen<br>
+                    <strong>💻 Desktop:</strong> Look for install icon in address bar
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="gameScreen" class="game-screen">
+            <div class="game-header">
+                <h2>PAZCLEAR vs <span id="enemyName">Enemy</span></h2>
+                <p>Level: <span id="playerLevel">1</span> | XP: <span id="playerXP">0</span>/100</p>
+            </div>
+
+            <div class="stats">
+                <div class="player-stats">
+                    <h3>🔬 PAZCLEAR Agent</h3>
+                    <div>HP: <span id="playerHP">100</span>/100</div>
+                    <div class="hp-bar">
+                        <div id="playerHPBar" class="hp-fill" style="width: 100%"></div>
+                    </div>
+                    <div>Attack Power: <span id="playerAttack">20</span></div>
+                </div>
+
+                <div class="enemy-stats">
+                    <h3 id="currentEnemyName">🦠 Enemy</h3>
+                    <div>HP: <span id="enemyHP">50</span>/<span id="enemyMaxHP">50</span>
+                        <span id="biofilmStatus" class="biofilm-indicator biofilm-inactive">Planktonic</span>
+                    </div>
+                    <div class="hp-bar">
+                        <div id="enemyHPBar" class="hp-fill enemy-hp-fill" style="width: 100%"></div>
+                    </div>
+                    <div id="enemyInfo">Status: Normal</div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="action-btn" onclick="playerAttack()">⚔️ ATTACK</button>
+                <button class="action-btn" onclick="breakBiofilm()">🛡️ BREAK BIOFILM</button>
+                <button class="action-btn" onclick="quorumQuenching()">📡 QUORUM QUENCHING</button>
+                <button class="action-btn ultimate-btn" onclick="globalCompliance()" id="ultimateBtn">
+                    🌐 GLOBAL COMPLIANCE PROTOCOL (3 uses)
+                </button>
+            </div>
+
+            <div class="battle-log" id="battleLog"></div>
+        </div>
+
+        <!-- Victory Screen -->
+        <div id="victoryScreen" class="victory-screen">
+            <h2>🎉 MISSION ACCOMPLISHED!</h2>
+            <p>All bacterial threats have been neutralized.</p>
+            <p>PAZCLEAR has successfully maintained system compliance.</p>
+            <button class="start-btn" onclick="restartGame()">NEW MISSION</button>
+        </div>
+
+        <!-- Defeat Screen -->
+        <div id="defeatScreen" class="defeat-screen">
+            <h2>⚠️ SYSTEM COMPROMISED</h2>
+            <p>The bacterial infection has overwhelmed the system.</p>
+            <p>PAZCLEAR agent requires reinforcement.</p>
+            <button class="start-btn" onclick="restartGame()">RETRY MISSION</button>
+        </div>
+    </div>
+
+    <script>
+        // PWA Installation
+        let deferredPrompt;
+        const installBtn = document.getElementById('installBtn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'inline-block';
+        });
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                    }
+                    deferredPrompt = null;
+                    installBtn.style.display = 'none';
+                });
+            }
+        }
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+
+        // Game State
+        let gameState = {
+            player: {
+                hp: 100,
+                maxHP: 100,
+                attack: 20,
+                level: 1,
+                xp: 0,
+                ultimateUses: 3
+            },
+            currentEnemy: null,
+            enemyIndex: 0,
+            quorumQuenchingTurns: 0,
+            complianceProtocolTurns: 0,
+            battleLog: []
+        };
+
+        // Enemy Templates
+        const enemies = [
+            {
+                name: "E. coli",
+                hp: 40,
+                maxHP: 40,
+                attack: 15,
+                hasBiofilm: false,
+                biofilmTurns: 3,
+                currentBiofilmTurns: 0,
+                canMultiply: true,
+                multiplyChance: 0.3,
+                xpReward: 20
+            },
+            {
+                name: "Salmonella",
+                hp: 60,
+                maxHP: 60,
+                attack: 18,
+                hasBiofilm: false,
+                biofilmTurns: 4,
+                currentBiofilmTurns: 0,
+                canMultiply: false,
+                xpReward: 30
+            },
+            {
+                name: "Enterobacter",
+                hp: 50,
+                maxHP: 50,
+                attack: 16,
+                hasBiofilm: false,
+                biofilmTurns: 3,
+                currentBiofilmTurns: 0,
+                canMultiply: true,
+                multiplyChance: 0.4,
+                xpReward: 25
+            },
+            {
+                name: "Listeria",
+                hp: 80,
+                maxHP: 80,
+                attack: 20,
+                hasBiofilm: false,
+                biofilmTurns: 2,
+                currentBiofilmTurns: 0,
+                canMultiply: false,
+                xpReward: 40
+            },
+            {
+                name: "Legionella",
+                hp: 70,
+                maxHP: 70,
+                attack: 22,
+                hasBiofilm: false,
+                biofilmTurns: 3,
+                currentBiofilmTurns: 0,
+                canMultiply: false,
+                damageBonus: 0,
+                xpReward: 35
+            },
+            {
+                name: "Pseudomonas (BOSS)",
+                hp: 120,
+                maxHP: 120,
+                attack: 25,
+                hasBiofilm: true,
+                biofilmTurns: 0,
+                currentBiofilmTurns: 0,
+                canMultiply: false,
+                xpReward: 100
+            }
+        ];
+
+        function startGame() {
+            showLoading();
+            setTimeout(() => {
+                document.getElementById('titleScreen').style.display = 'none';
+                document.getElementById('gameScreen').style.display = 'block';
+                initializeGame();
+                hideLoading();
+            }, 500);
+        }
+
+        function showLoading() {
+            document.getElementById('loading').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        function initializeGame() {
+            gameState.player = {
+                hp: 100,
+                maxHP: 100,
+                attack: 20,
+                level: 1,
+                xp: 0,
+                ultimateUses: 3
+            };
+            gameState.enemyIndex = 0;
+            gameState.quorumQuenchingTurns = 0;
+            gameState.complianceProtocolTurns = 0;
+            gameState.battleLog = [];
+            
+            spawnNextEnemy();
+            updateUI();
+        }
+
+        function spawnNextEnemy() {
+            if (gameState.enemyIndex >= enemies.length) {
+                victory();
+                return;
+            }
+
+            const enemyTemplate = enemies[gameState.enemyIndex];
+            gameState.currentEnemy = JSON.parse(JSON.stringify(enemyTemplate));
+            gameState.currentEnemy.currentBiofilmTurns = 0;
+            
+            addLog(`A wild ${gameState.currentEnemy.name} appears!`, 'system');
+            
+            if (gameState.currentEnemy.hasBiofilm) {
+                addLog(`${gameState.currentEnemy.name} is protected by a biofilm!`, 'enemy');
+            }
+            
+            updateUI();
+        }
+
+        function playerAttack() {
+            const enemy = gameState.currentEnemy;
+            let damage = gameState.player.attack;
+            
+            if (enemy.hasBiofilm) {
+                damage = Math.floor(damage * 0.2);
+                addLog(`PAZCLEAR attacks but the biofilm absorbs most damage! (${damage} damage)`, 'player');
+            } else {
+                addLog(`PAZCLEAR attacks for ${damage} damage!`, 'player');
+            }
+            
+            enemy.hp -= damage;
+            
+            if (enemy.hp <= 0) {
+                enemyDefeated();
+                return;
+            }
+            
+            enemyTurn();
+        }
+
+        function breakBiofilm() {
+            const enemy = gameState.currentEnemy;
+            
+            if (enemy.hasBiofilm) {
+                enemy.hasBiofilm = false;
+                addLog(`PAZCLEAR breaks the biofilm! ${enemy.name} is now vulnerable!`, 'player');
+            } else {
+                addLog(`${enemy.name} has no biofilm to break.`, 'system');
+            }
+            
+            enemyTurn();
+        }
+
+        function quorumQuenching() {
+            gameState.quorumQuenchingTurns = 3;
+            addLog(`PAZCLEAR disrupts bacterial communication! Quorum quenching active for 3 turns.`, 'player');
+            enemyTurn();
+        }
+
+        function globalCompliance() {
+            if (gameState.player.ultimateUses <= 0) {
+                addLog(`Global Compliance Protocol has no remaining uses!`, 'system');
+                return;
+            }
+            
+            gameState.player.ultimateUses--;
+            gameState.complianceProtocolTurns = 3;
+            gameState.currentEnemy.hasBiofilm = false;
+            
+            addLog(`GLOBAL COMPLIANCE PROTOCOL ACTIVATED! All biofilms disrupted!`, 'player');
+            addLog(`System compliance enforced for 3 turns.`, 'system');
+            
+            enemyTurn();
+        }
+
+        function enemyTurn() {
+            const enemy = gameState.currentEnemy;
+            
+            // Update turn counters
+            if (gameState.quorumQuenchingTurns > 0) {
+                gameState.quorumQuenchingTurns--;
+            }
+            if (gameState.complianceProtocolTurns > 0) {
+                gameState.complianceProtocolTurns--;
+            }
+            
+            // Enemy AI
+            if (gameState.complianceProtocolTurns === 0) {
+                // Biofilm formation
+                if (!enemy.hasBiofilm && enemy.biofilmTurns > 0) {
+                    enemy.currentBiofilmTurns++;
+                    if (enemy.currentBiofilmTurns >= enemy.biofilmTurns) {
+                        enemy.hasBiofilm = true;
+                        addLog(`${enemy.name} forms a protective biofilm!`, 'enemy');
+                    }
+                }
+                
+                // Multiplication
+                if (enemy.canMultiply && gameState.quorumQuenchingTurns === 0) {
+                    if (Math.random() < enemy.multiplyChance) {
+                        const healAmount = Math.floor(enemy.maxHP * 0.3);
+                        enemy.hp = Math.min(enemy.hp + healAmount, enemy.maxHP);
+                        addLog(`${enemy.name} multiplies! HP restored by ${healAmount}!`, 'enemy');
+                    }
+                }
+            }
+            
+            // Legionella damage bonus
+            if (enemy.name === "Legionella") {
+                enemy.damageBonus = (enemy.damageBonus || 0) + 2;
+                if (enemy.damageBonus > 0) {
+                    addLog(`Legionella becomes more virulent! (+${enemy.damageBonus} damage)`, 'enemy');
+                }
+            }
+            
+            // Enemy attack
+            let damage = enemy.attack + (enemy.damageBonus || 0);
+            gameState.player.hp -= damage;
+            addLog(`${enemy.name} attacks for ${damage} damage!`, 'enemy');
+            
+            if (gameState.player.hp <= 0) {
+                defeat();
+                return;
+            }
+            
+            updateUI();
+        }
+
+        function enemyDefeated() {
+            const enemy = gameState.currentEnemy;
+            addLog(`${enemy.name} has been eliminated!`, 'system');
+            
+            // Gain XP
+            gameState.player.xp += enemy.xpReward;
+            addLog(`Gained ${enemy.xpReward} XP!`, 'system');
+            
+            // Level up check
+            if (gameState.player.xp >= 100) {
+                gameState.player.level++;
+                gameState.player.xp -= 100;
+                gameState.player.attack += 5;
+                gameState.player.maxHP += 20;
+                gameState.player.hp = gameState.player.maxHP; // Full heal on level up
+                addLog(`LEVEL UP! Attack increased to ${gameState.player.attack}!`, 'system');
+            }
+            
+            gameState.enemyIndex++;
+            setTimeout(() => {
+                spawnNextEnemy();
+            }, 1500);
+        }
+
+        function victory() {
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('victoryScreen').style.display = 'flex';
+            document.getElementById('victoryScreen').classList.add('active');
+        }
+
+        function defeat() {
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('defeatScreen').style.display = 'flex';
+            document.getElementById('defeatScreen').classList.add('active');
+        }
+
+        function restartGame() {
+            document.getElementById('victoryScreen').style.display = 'none';
+            document.getElementById('defeatScreen').style.display = 'none';
+            document.getElementById('victoryScreen').classList.remove('active');
+            document.getElementById('defeatScreen').classList.remove('active');
+            document.getElementById('titleScreen').style.display = 'block';
+        }
+
+        function addLog(message, type) {
+            const log = document.getElementById('battleLog');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = message;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+            
+            // Keep log manageable
+            if (log.children.length > 20) {
+                log.removeChild(log.firstChild);
+            }
+        }
+
+        function updateUI() {
+            const player = gameState.player;
+            const enemy = gameState.currentEnemy;
+            
+            // Player stats
+            document.getElementById('playerHP').textContent = player.hp;
+            document.getElementById('playerHPBar').style.width = `${(player.hp / player.maxHP) * 100}%`;
+            document.getElementById('playerAttack').textContent = player.attack;
+            document.getElementById('playerLevel').textContent = player.level;
+            document.getElementById('playerXP').textContent = player.xp;
+            
+            // Enemy stats
+            if (enemy) {
+                document.getElementById('enemyName').textContent = enemy.name;
+                document.getElementById('currentEnemyName').textContent = `🦠 ${enemy.name}`;
+                document.getElementById('enemyHP').textContent = enemy.hp;
+                document.getElementById('enemyMaxHP').textContent = enemy.maxHP;
+                document.getElementById('enemyHPBar').style.width = `${(enemy.hp / enemy.maxHP) * 100}%`;
+                
+                const biofilmStatus = document.getElementById('biofilmStatus');
+                if (enemy.hasBiofilm) {
+                    biofilmStatus.textContent = 'Biofilm';
+                    biofilmStatus.className = 'biofilm-indicator biofilm-active';
+                } else {
+                    biofilmStatus.textContent = 'Planktonic';
+                    biofilmStatus.className = 'biofilm-indicator biofilm-inactive';
+                }
+                
+                let statusText = 'Normal';
+                if (gameState.quorumQuenchingTurns > 0) {
+                    statusText += ` | Quorum Disrupted (${gameState.quorumQuenchingTurns})`;
+                }
+                if (gameState.complianceProtocolTurns > 0) {
+                    statusText += ` | Compliance Active (${gameState.complianceProtocolTurns})`;
+                }
+                document.getElementById('enemyInfo').textContent = `Status: ${statusText}`;
+            }
+            
+            // Ultimate button
+            const ultimateBtn = document.getElementById('ultimateBtn');
+            ultimateBtn.textContent = `🌐 GLOBAL COMPLIANCE PROTOCOL (${player.ultimateUses} uses)`;
+            ultimateBtn.disabled = player.ultimateUses <= 0;
+        }
+
+                // Prevent zoom and improve touch experience
+        document.addEventListener('touchstart', function(e) {
+            if (e.touches.length > 1) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(e) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                e.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+
+        // Vibration feedback for mobile
+        function vibrate(pattern = [50]) {
+            if ('vibrate' in navigator) {
+                navigator.vibrate(pattern);
+            }
+        }
+
+        // Add vibration to button clicks
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('action-btn') || 
+                e.target.classList.contains('start-btn') || 
+                e.target.classList.contains('install-btn')) {
+                vibrate([30]);
+            }
+        });
+
+        // Initialize game on load
+        window.addEventListener('load', function() {
+            updateUI();
+        });
+    </script>
+</body>
+</html>
