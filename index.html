@@ -153,7 +153,7 @@
 
         /* バトルエリア */
         .battle-area {
-            height: calc(100vh - 80px - 240px);
+            height: calc(100vh - 80px - 320px);
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             position: relative;
             display: flex;
@@ -251,48 +251,6 @@
             100% { opacity: 1; transform: scale(1); }
         }
 
-        .stats-overlay {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.95);
-            padding: 15px 25px;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            min-width: 300px;
-            text-align: center;
-            z-index: 15;
-        }
-
-        .hp-display {
-            font-size: 1.2em;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #333;
-            position: relative;
-            z-index: 16;
-        }
-
-        .hp-bar-large {
-            width: 100%;
-            height: 15px;
-            background: #ddd;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 8px 0;
-            border: 2px solid #ccc;
-            position: relative;
-            z-index: 16;
-        }
-
-        .hp-fill-large {
-            height: 100%;
-            background: linear-gradient(90deg, #f44336, #ef5350);
-            transition: width 0.8s ease;
-            border-radius: 8px;
-        }
-
         .player-stats-mini {
             position: absolute;
             top: 20px;
@@ -338,6 +296,75 @@
             background: white;
             transition: width 0.5s ease;
             border-radius: 5px;
+        }
+
+        /* 敵のHPゲージ（下部表示） */
+        .enemy-hp-bar-bottom {
+            position: fixed;
+            bottom: 260px;
+            left: 0;
+            right: 0;
+            background: rgba(244, 67, 54, 0.9);
+            color: white;
+            padding: 12px 15px;
+            box-shadow: 0 -2px 10px rgba(244, 67, 54, 0.3);
+            z-index: 19;
+            border-top: 3px solid #d32f2f;
+        }
+
+        .enemy-hp-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .enemy-name-bottom {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .enemy-hp-text {
+            font-weight: bold;
+        }
+
+        .biofilm-indicator-small {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .biofilm-indicator-small.inactive {
+            background: rgba(76, 175, 80, 0.8);
+        }
+
+        .biofilm-indicator-small:not(.inactive) {
+            background: rgba(255, 152, 0, 0.9);
+            animation: pulse 2s infinite;
+        }
+
+        .enemy-hp-bar-container {
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+
+        .enemy-hp-fill-bottom {
+            height: 100%;
+            background: linear-gradient(90deg, #ffffff, #f5f5f5);
+            transition: width 0.8s ease;
+            border-radius: 6px;
+        }
+
+        .enemy-status-bottom {
+            font-size: 0.85em;
+            opacity: 0.9;
+            text-align: center;
         }
 
         /* コマンドエリア（下部固定） */
@@ -462,6 +489,163 @@
             box-shadow: 0 2px 8px rgba(156, 39, 176, 0.4);
         }
 
+        /* Global Compliance Protocol アニメーション */
+        .compliance-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, 
+                rgba(156, 39, 176, 0.9) 0%, 
+                rgba(123, 31, 162, 0.9) 50%, 
+                rgba(74, 20, 140, 0.9) 100%);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: complianceFlash 3s ease-in-out;
+        }
+
+        @keyframes complianceFlash {
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .compliance-content {
+            text-align: center;
+            color: white;
+            font-family: 'Courier New', monospace;
+        }
+
+        .compliance-title {
+            font-size: clamp(2em, 8vw, 4em);
+            font-weight: bold;
+            margin-bottom: 20px;
+            animation: complianceGlow 2s ease-in-out infinite alternate;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes complianceGlow {
+            0% { text-shadow: 0 0 20px rgba(255, 255, 255, 0.8); }
+            100% { text-shadow: 0 0 40px rgba(255, 255, 255, 1), 0 0 60px rgba(156, 39, 176, 0.8); }
+        }
+
+        .compliance-text {
+            font-size: clamp(1.2em, 4vw, 1.8em);
+            margin: 10px 0;
+            animation: complianceTypewriter 2s steps(40, end);
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 2px solid white;
+        }
+
+        @keyframes complianceTypewriter {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        .compliance-progress {
+            width: 80%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            margin: 30px auto;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .compliance-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #8bc34a, #cddc39);
+            width: 0%;
+            animation: complianceProgress 2.5s ease-in-out forwards;
+            border-radius: 10px;
+        }
+
+        @keyframes complianceProgress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        .compliance-warning {
+            font-size: clamp(0.8em, 3vw, 1.2em);
+            color: #ffeb3b;
+            margin-top: 20px;
+            animation: complianceBlink 0.5s infinite;
+        }
+
+        @keyframes complianceBlink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        /* 敵キャラの消滅アニメーション */
+        .enemy-elimination {
+            animation: enemyDisintegrate 2s ease-in-out forwards;
+        }
+
+        @keyframes enemyDisintegrate {
+            0% { 
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+                filter: brightness(1);
+            }
+            25% { 
+                transform: scale(1.1) rotate(5deg);
+                filter: brightness(2) hue-rotate(180deg);
+            }
+            50% { 
+                transform: scale(1.2) rotate(-5deg);
+                filter: brightness(3) hue-rotate(360deg) blur(2px);
+            }
+            75% { 
+                transform: scale(0.8) rotate(10deg);
+                opacity: 0.5;
+                filter: brightness(0.5) blur(5px);
+            }
+            100% { 
+                transform: scale(0) rotate(180deg);
+                opacity: 0;
+                filter: brightness(0) blur(10px);
+            }
+        }
+
+        /* 画面全体の効果 */
+        .screen-shake {
+            animation: screenShake 0.5s ease-in-out 3;
+        }
+
+        @keyframes screenShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px) translateY(2px); }
+            75% { transform: translateX(5px) translateY(-2px); }
+        }
+
+        /* 粒子効果 */
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particleFloat 3s linear forwards;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(0);
+            }
+        }
+
         .victory-screen, .defeat-screen {
             display: none;
             text-align: center;
@@ -518,7 +702,7 @@
         /* iPhone対応の改良版モバイルCSS */
         @media (max-width: 480px) {
             .battle-area {
-                height: calc(100vh - 60px - 200px);
+                height: calc(100vh - 60px - 280px);
                 padding: 10px;
             }
             
@@ -533,12 +717,6 @@
                 padding: 8px 15px;
             }
             
-            .stats-overlay {
-                bottom: 10px;
-                min-width: 250px;
-                padding: 10px 15px;
-            }
-            
             .player-stats-mini {
                 padding: 8px;
                 min-width: 140px;
@@ -549,6 +727,19 @@
             .player-image-mini {
                 width: 35px;
                 height: 35px;
+            }
+            
+            .enemy-hp-bar-bottom {
+                bottom: 220px;
+                padding: 10px 12px;
+            }
+            
+            .enemy-hp-info {
+                font-size: 0.9em;
+            }
+            
+            .enemy-name-bottom {
+                font-size: 1em;
             }
             
             .command-area {
@@ -590,7 +781,7 @@
             }
             
             .battle-area {
-                height: calc(100vh - 50px - 180px);
+                height: calc(100vh - 50px - 260px);
             }
             
             .enemy-image-large {
@@ -598,13 +789,13 @@
                 height: clamp(100px, 35vw, 160px);
             }
             
-            .stats-overlay {
-                min-width: 200px;
-                padding: 8px 12px;
+            .enemy-hp-bar-bottom {
+                bottom: 200px;
+                padding: 8px 10px;
             }
             
-            .hp-display {
-                font-size: 1em;
+            .enemy-hp-info {
+                font-size: 0.85em;
             }
             
             .player-stats-mini {
@@ -615,12 +806,21 @@
         /* 横向き対応 */
         @media (orientation: landscape) and (max-height: 500px) {
             .battle-area {
-                height: calc(100vh - 50px - 160px);
+                height: calc(100vh - 50px - 240px);
             }
             
             .enemy-image-large {
                 width: clamp(100px, 30vw, 180px);
                 height: clamp(100px, 30vw, 180px);
+            }
+            
+            .enemy-hp-bar-bottom {
+                bottom: 180px;
+                padding: 6px 10px;
+            }
+            
+            .enemy-hp-bar-container {
+                height: 10px;
             }
             
             .command-area {
@@ -698,20 +898,22 @@
                 <!-- 敵キャラ大表示 -->
                 <div class="enemy-showcase">
                     <div class="enemy-name-large" id="enemyNameLarge">🦠 Enemy</div>
-                    <img id="enemyImageLarge" class="enemy-image-large" src="images/ecoli.png" alt="Enemy" onerror="this.style.display='none'">
+                                        <img id="enemyImageLarge" class="enemy-image-large" src="images/ecoli.png" alt="Enemy" onerror="this.style.display='none'">
                     <div id="biofilmIndicatorLarge" class="biofilm-indicator-large inactive">Planktonic</div>
                 </div>
+            </div>
 
-                <!-- 敵ステータス（下部オーバーレイ） -->
-                <div class="stats-overlay">
-                    <div class="hp-display">
-                        HP: <span id="enemyHP">50</span>/<span id="enemyMaxHP">50</span>
-                    </div>
-                    <div class="hp-bar-large">
-                        <div id="enemyHPBarLarge" class="hp-fill-large" style="width: 100%"></div>
-                    </div>
-                    <div id="enemyInfoLarge">Status: Normal</div>
+            <!-- 敵のHPゲージ（下部表示） -->
+            <div class="enemy-hp-bar-bottom">
+                <div class="enemy-hp-info">
+                    <span class="enemy-name-bottom" id="enemyNameBottom">🦠 E. coli</span>
+                    <span class="enemy-hp-text">HP: <span id="enemyHPBottom">40</span>/<span id="enemyMaxHPBottom">40</span></span>
+                    <span id="biofilmStatusBottom" class="biofilm-indicator-small inactive">Planktonic</span>
                 </div>
+                <div class="enemy-hp-bar-container">
+                    <div id="enemyHPBarBottom" class="enemy-hp-fill-bottom" style="width: 100%"></div>
+                </div>
+                <div class="enemy-status-bottom" id="enemyInfoBottom">Status: Normal</div>
             </div>
 
             <!-- コマンドエリア（下部固定） -->
@@ -728,7 +930,7 @@
                     <button class="action-btn" onclick="quorumQuenching()">📡 QUORUM QUENCHING</button>
                     <button class="action-btn heal-btn" onclick="healPlayer()" id="healBtn">💊 HEAL</button>
                     <button class="action-btn ultimate-btn" onclick="globalCompliance()" id="ultimateBtn">
-                        🌐 GLOBAL COMPLIANCE PROTOCOL (3 uses)
+                        💀 GLOBAL COMPLIANCE PROTOCOL (3 uses)
                     </button>
                 </div>
             </div>
@@ -748,6 +950,18 @@
             <p>The bacterial infection has overwhelmed the system.</p>
             <p>PAZCLEAR agent requires reinforcement.</p>
             <button class="start-btn" onclick="restartGame()">RETRY MISSION</button>
+        </div>
+
+        <!-- Global Compliance Protocol アニメーション -->
+        <div id="complianceOverlay" class="compliance-overlay">
+            <div class="compliance-content">
+                <div class="compliance-title">⚠️ GLOBAL COMPLIANCE PROTOCOL ⚠️</div>
+                <div class="compliance-text" id="complianceText">SYSTEM-WIDE STERILIZATION INITIATED</div>
+                <div class="compliance-progress">
+                    <div class="compliance-progress-fill"></div>
+                </div>
+                <div class="compliance-warning">⚠️ ALL BACTERIAL PROCESSES TERMINATED ⚠️</div>
+            </div>
         </div>
     </div>
 
@@ -874,7 +1088,7 @@
         }
 
         function hideLoading() {
-                        document.getElementById('loading').style.display = 'none';
+            document.getElementById('loading').style.display = 'none';
         }
 
         function initializeGame() {
@@ -950,7 +1164,22 @@
 
         function quorumQuenching() {
             gameState.quorumQuenchingTurns = 3;
+            const enemy = gameState.currentEnemy;
+            
             addLog(`PAZCLEAR disrupts bacterial communication! Quorum quenching active for 3 turns.`, 'player');
+            addLog(`Bacterial multiplication, healing, and coordination abilities are disabled!`, 'system');
+            
+            // 追加効果: バイオフィルムを弱体化
+            if (enemy.hasBiofilm) {
+                addLog(`Disrupted communication weakens the biofilm structure!`, 'system');
+            }
+            
+            // 追加効果: 敵の攻撃力を一時的に下げる
+            if (!enemy.temporaryAttackReduction) {
+                enemy.temporaryAttackReduction = Math.floor(enemy.attack * 0.3);
+                addLog(`${enemy.name}'s coordination is impaired! Attack reduced by ${enemy.temporaryAttackReduction}!`, 'system');
+            }
+            
             enemyTurn();
         }
 
@@ -980,14 +1209,80 @@
                 return;
             }
             
+            const enemy = gameState.currentEnemy;
             gameState.player.ultimateUses--;
-            gameState.complianceProtocolTurns = 3;
-            gameState.currentEnemy.hasBiofilm = false;
             
-            addLog(`GLOBAL COMPLIANCE PROTOCOL ACTIVATED! All biofilms disrupted!`, 'player');
-            addLog(`System compliance enforced for 3 turns.`, 'system');
+            // アニメーション開始
+            showComplianceAnimation(enemy);
+        }
+
+        function showComplianceAnimation(enemy) {
+            // 画面を震わせる
+            document.body.classList.add('screen-shake');
             
-            enemyTurn();
+            // バイブレーション
+            vibrate([100, 50, 100, 50, 200]);
+            
+            // オーバーレイ表示
+            const overlay = document.getElementById('complianceOverlay');
+            overlay.style.display = 'flex';
+            
+            // 段階的なメッセージ表示
+            setTimeout(() => {
+                addLog(`GLOBAL COMPLIANCE PROTOCOL ACTIVATED!`, 'player');
+            }, 500);
+            
+            setTimeout(() => {
+                addLog(`System-wide sterilization protocol initiated...`, 'system');
+                // 敵キャラに消滅アニメーション適用
+                const enemyImage = document.getElementById('enemyImageLarge');
+                enemyImage.classList.add('enemy-elimination');
+            }, 1000);
+            
+            setTimeout(() => {
+                addLog(`CRITICAL SYSTEM OVERRIDE: ${enemy.name} eliminated instantly!`, 'player');
+                // 粒子効果を追加
+                createParticleEffect();
+            }, 1500);
+            
+            setTimeout(() => {
+                const overkillDamage = enemy.hp + 50;
+                enemy.hp = 0;
+                addLog(`Dealt ${overkillDamage} sterilization damage!`, 'system');
+                addLog(`All bacterial processes terminated. Compliance achieved.`, 'system');
+            }, 2000);
+            
+            // アニメーション終了
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                document.body.classList.remove('screen-shake');
+                
+                // 敵を倒す
+                enemyDefeated();
+            }, 3000);
+        }
+
+        function createParticleEffect() {
+            const container = document.querySelector('.battle-area');
+            
+            // 20個の粒子を生成
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.top = Math.random() * 100 + '%';
+                    
+                    container.appendChild(particle);
+                    
+                    // 3秒後に削除
+                    setTimeout(() => {
+                        if (particle.parentNode) {
+                            particle.parentNode.removeChild(particle);
+                        }
+                    }, 3000);
+                }, i * 50);
+            }
         }
 
         function enemyTurn() {
@@ -996,7 +1291,16 @@
             // Update turn counters
             if (gameState.quorumQuenchingTurns > 0) {
                 gameState.quorumQuenchingTurns--;
+                if (gameState.quorumQuenchingTurns === 0) {
+                    addLog(`Quorum quenching effect wears off. Bacterial communication restored.`, 'system');
+                    // 攻撃力減少効果を解除
+                    if (enemy.temporaryAttackReduction) {
+                        addLog(`${enemy.name} regains full coordination!`, 'enemy');
+                        enemy.temporaryAttackReduction = 0;
+                    }
+                }
             }
+            
             if (gameState.complianceProtocolTurns > 0) {
                 gameState.complianceProtocolTurns--;
             }
@@ -1012,20 +1316,38 @@
                     }
                 }
                 
-                // Multiplication
+                // Multiplication（改良版）
                 if (enemy.canMultiply && gameState.quorumQuenchingTurns === 0) {
-                    if (Math.random() < enemy.multiplyChance) {
-                        const healAmount = Math.floor(enemy.maxHP * 0.3);
+                    const lowHealthThreshold = enemy.maxHP * 0.3;
+                    const isLowHealth = enemy.hp <= lowHealthThreshold;
+                    
+                    if (isLowHealth && Math.random() < 0.15) {
+                        const healAmount = Math.floor(enemy.maxHP * 0.2);
                         enemy.hp = Math.min(enemy.hp + healAmount, enemy.maxHP);
-                        addLog(`${enemy.name} multiplies! HP restored by ${healAmount}!`, 'enemy');
+                        addLog(`${enemy.name} desperately multiplies! HP restored by ${healAmount}!`, 'enemy');
+                    }
+                } else if (enemy.canMultiply && gameState.quorumQuenchingTurns > 0) {
+                    // クオラムクエンチング効果中のメッセージ
+                    if (Math.random() < 0.3) {
+                        addLog(`${enemy.name} tries to multiply but communication is disrupted!`, 'system');
                     }
                 }
             }
             
-            // Enemy attack
+            // Enemy attack（攻撃力減少を適用）
             let damage = enemy.attack;
+            if (enemy.temporaryAttackReduction) {
+                damage -= enemy.temporaryAttackReduction;
+                damage = Math.max(1, damage); // 最低1ダメージ
+            }
+            
             gameState.player.hp -= damage;
-            addLog(`${enemy.name} attacks for ${damage} damage!`, 'enemy');
+            
+            if (enemy.temporaryAttackReduction) {
+                addLog(`${enemy.name} attacks with impaired coordination for ${damage} damage!`, 'enemy');
+            } else {
+                addLog(`${enemy.name} attacks for ${damage} damage!`, 'enemy');
+            }
             
             if (gameState.player.hp <= 0) {
                 defeat();
@@ -1118,13 +1440,16 @@
             document.getElementById('playerLevel').textContent = player.level;
             document.getElementById('playerXP').textContent = player.xp;
             
-            // Enemy stats (large display)
+            // Enemy stats (bottom display)
             if (enemy) {
                 document.getElementById('enemyName').textContent = enemy.name;
                 document.getElementById('enemyNameLarge').textContent = `🦠 ${enemy.name}`;
-                document.getElementById('enemyHP').textContent = enemy.hp;
-                document.getElementById('enemyMaxHP').textContent = enemy.maxHP;
-                document.getElementById('enemyHPBarLarge').style.width = `${(enemy.hp / enemy.maxHP) * 100}%`;
+                
+                // 下部のHPゲージを更新
+                document.getElementById('enemyNameBottom').textContent = `🦠 ${enemy.name}`;
+                document.getElementById('enemyHPBottom').textContent = enemy.hp;
+                document.getElementById('enemyMaxHPBottom').textContent = enemy.maxHP;
+                document.getElementById('enemyHPBarBottom').style.width = `${(enemy.hp / enemy.maxHP) * 100}%`;
                 
                 // Update large enemy image
                 const enemyImageLarge = document.getElementById('enemyImageLarge');
@@ -1136,15 +1461,21 @@
                     enemyImageLarge.style.display = 'none';
                 }
                 
-                // Biofilm effect
-                const biofilmIndicator = document.getElementById('biofilmIndicatorLarge');
+                // Biofilm effect (both indicators)
+                const biofilmIndicatorLarge = document.getElementById('biofilmIndicatorLarge');
+                const biofilmStatusBottom = document.getElementById('biofilmStatusBottom');
+                
                 if (enemy.hasBiofilm) {
-                    biofilmIndicator.textContent = 'BIOFILM';
-                    biofilmIndicator.className = 'biofilm-indicator-large';
+                    biofilmIndicatorLarge.textContent = 'BIOFILM';
+                    biofilmIndicatorLarge.className = 'biofilm-indicator-large';
+                    biofilmStatusBottom.textContent = 'Biofilm';
+                    biofilmStatusBottom.className = 'biofilm-indicator-small';
                     enemyImageLarge.classList.add('biofilm');
                 } else {
-                    biofilmIndicator.textContent = 'Planktonic';
-                    biofilmIndicator.className = 'biofilm-indicator-large inactive';
+                    biofilmIndicatorLarge.textContent = 'Planktonic';
+                    biofilmIndicatorLarge.className = 'biofilm-indicator-large inactive';
+                    biofilmStatusBottom.textContent = 'Planktonic';
+                    biofilmStatusBottom.className = 'biofilm-indicator-small inactive';
                     enemyImageLarge.classList.remove('biofilm');
                 }
                 
@@ -1155,12 +1486,12 @@
                 if (gameState.complianceProtocolTurns > 0) {
                     statusText += ` | Compliance Active (${gameState.complianceProtocolTurns})`;
                 }
-                document.getElementById('enemyInfoLarge').textContent = `Status: ${statusText}`;
+                document.getElementById('enemyInfoBottom').textContent = `Status: ${statusText}`;
             }
             
-            // Ultimate button
+            // Ultimate button（一撃必殺版）
             const ultimateBtn = document.getElementById('ultimateBtn');
-            ultimateBtn.textContent = `🌐 GLOBAL COMPLIANCE PROTOCOL (${player.ultimateUses} uses)`;
+            ultimateBtn.textContent = `💀 GLOBAL COMPLIANCE PROTOCOL (${player.ultimateUses} uses)`;
             ultimateBtn.disabled = player.ultimateUses <= 0;
             
             // Heal button（無限使用版）
@@ -1210,3 +1541,5 @@
     </script>
 </body>
 </html>
+
+                        
