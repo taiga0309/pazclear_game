@@ -603,18 +603,22 @@
             </div>
 
             <!-- コマンドエリア（下部固定） -->
-            <div class="command-area">
-                <div class="actions">
-                    <button class="action-btn" onclick="playerAttack()">⚔️ ATTACK</button>
-                    <button class="action-btn" onclick="breakBiofilm()">🛡️ BREAK BIOFILM</button>
-                    <button class="action-btn" onclick="quorumQuenching()">📡 QUORUM QUENCHING</button>
-                    <button class="action-btn ultimate-btn" onclick="globalCompliance()" id="ultimateBtn">
-                        🌐 GLOBAL COMPLIANCE PROTOCOL (3 uses)
-                    </button>
-                </div>
-                
-                <div class="battle-log-mini" id="battleLog"></div>
-            </div>
+<div class="command-area">
+    <!-- 📝 バトルログを一番上に移動 -->
+    <div class="battle-log-mini" id="battleLog">
+        <div class="log-entry log-system">Battle started! Choose your action.</div>
+    </div>
+    
+    <!-- コマンドボタンをログの下に配置 -->
+    <div class="actions">
+        <button class="action-btn" onclick="playerAttack()">⚔️ ATTACK</button>
+        <button class="action-btn" onclick="breakBiofilm()">🛡️ BREAK BIOFILM</button>
+        <button class="action-btn" onclick="quorumQuenching()">📡 QUORUM QUENCHING</button>
+        <button class="action-btn ultimate-btn" onclick="globalCompliance()" id="ultimateBtn">
+            🌐 GLOBAL COMPLIANCE PROTOCOL (3 uses)
+        </button>
+    </div>
+</div>
         </div>
             <div class="actions">
                 <button class="action-btn" onclick="playerAttack()">⚔️ ATTACK</button>
