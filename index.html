@@ -20,7 +20,7 @@
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192x192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="icon-512x512.png">
     
-    <style>
+<style>
         * {
             margin: 0;
             padding: 0;
@@ -133,18 +133,19 @@
 
         .game-screen {
             display: none;
-            padding: 15px;
             height: 100vh;
-            overflow-y: auto;
+            overflow: hidden;
+            position: relative;
         }
 
         .game-header {
             text-align: center;
-            margin-bottom: 20px;
+            padding: 15px;
             color: #1976d2;
-            padding: 10px 0;
             background: rgba(25, 118, 210, 0.1);
-            border-radius: 8px;
+            border-bottom: 2px solid #e3f2fd;
+            position: relative;
+            z-index: 10;
         }
 
         .game-header h2 {
@@ -152,108 +153,208 @@
             margin-bottom: 5px;
         }
 
-        .stats {
+        /* 🎨 新しいレイアウト: 敵キャラを大きく表示 */
+        .battle-area {
+            height: calc(100vh - 80px - 200px); /* ヘッダーとコマンドエリアを除く */
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            position: relative;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .enemy-showcase {
+            position: relative;
+            width: 100%;
+            height: 60%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             margin-bottom: 20px;
         }
 
-        .player-stats, .enemy-stats {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 12px;
-            border: 2px solid #e9ecef;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .character-display {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 10px;
-        }
-
-        .character-image, .enemy-image {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
+        .enemy-image-large {
+            width: clamp(200px, 50vw, 300px);
+            height: clamp(200px, 50vw, 300px);
+            border-radius: 20px;
             object-fit: cover;
-            border: 3px solid #1976d2;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            flex-shrink: 0;
+            border: 5px solid #f44336;
+            box-shadow: 0 10px 30px rgba(244, 67, 54, 0.3);
+            animation: enemyPulse 3s ease-in-out infinite;
+            position: relative;
+            z-index: 2;
         }
 
-        .character-image {
-            border-color: #4caf50;
+        .enemy-image-large.biofilm {
+            border-color: #ff9800;
+            box-shadow: 0 10px 30px rgba(255, 152, 0, 0.5), 
+                        0 0 50px rgba(255, 152, 0, 0.3);
+            animation: biofilmPulse 2s ease-in-out infinite;
         }
 
-        .enemy-image {
-            border-color: #f44336;
+        @keyframes enemyPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
         }
 
-        .character-info {
-            flex: 1;
+        @keyframes biofilmPulse {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 10px 30px rgba(255, 152, 0, 0.5), 
+                           0 0 50px rgba(255, 152, 0, 0.3);
+            }
+            50% { 
+                transform: scale(1.05);
+                box-shadow: 0 15px 40px rgba(255, 152, 0, 0.7), 
+                           0 0 70px rgba(255, 152, 0, 0.5);
+            }
         }
 
-        .player-stats h3, .enemy-stats h3 {
-            font-size: 1.1em;
-            margin-bottom: 5px;
-            color: #1976d2;
+        .enemy-name-large {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(244, 67, 54, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: clamp(1.2em, 4vw, 1.5em);
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+            z-index: 3;
         }
 
-        .hp-bar {
-            width: 100%;
-            height: 25px;
-            background: #ddd;
+        .biofilm-indicator-large {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #ff9800;
+            color: white;
+            padding: 8px 15px;
             border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4);
+            z-index: 4;
+            animation: pulse 2s infinite;
+        }
+
+        .biofilm-indicator-large.inactive {
+            background: #4caf50;
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .stats-overlay {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            min-width: 300px;
+            text-align: center;
+        }
+
+        .hp-display {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .hp-bar-large {
+            width: 100%;
+            height: 15px;
+            background: #ddd;
+            border-radius: 10px;
             overflow: hidden;
             margin: 8px 0;
             border: 2px solid #ccc;
         }
 
-        .hp-fill {
+        .hp-fill-large {
             height: 100%;
-            background: linear-gradient(90deg, #4caf50, #66bb6a);
-            transition: width 0.5s ease;
-            border-radius: 13px;
-        }
-
-        .enemy-hp-fill {
             background: linear-gradient(90deg, #f44336, #ef5350);
+            transition: width 0.8s ease;
+            border-radius: 8px;
         }
 
-        .biofilm-indicator {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            margin-left: 10px;
-            font-weight: bold;
-        }
-
-        .biofilm-active {
-            background: #ff9800;
+        .player-stats-mini {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(76, 175, 80, 0.9);
             color: white;
-            animation: pulse 2s infinite;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+            min-width: 200px;
         }
 
-        .biofilm-inactive {
-            background: #4caf50;
-            color: white;
+        .player-image-mini {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid white;
+            float: left;
+            margin-right: 10px;
         }
 
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.7; }
-            100% { opacity: 1; }
+        .player-info-mini {
+            overflow: hidden;
+        }
+
+        .player-info-mini h4 {
+            margin: 0 0 5px 0;
+            font-size: 1em;
+        }
+
+        .player-info-mini .hp-bar-mini {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 5px 0;
+        }
+
+        .player-info-mini .hp-fill-mini {
+            height: 100%;
+            background: white;
+            transition: width 0.5s ease;
+            border-radius: 5px;
+        }
+
+        /* コマンドエリア（下部固定） */
+        .command-area {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 3px solid #1976d2;
+            padding: 15px;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+            z-index: 20;
         }
 
         .actions {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         .action-btn {
@@ -295,23 +396,21 @@
             box-shadow: 0 2px 8px rgba(156, 39, 176, 0.4);
         }
 
-        .battle-log {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            padding: 15px;
-            height: 180px;
+        .battle-log-mini {
+            background: rgba(248, 249, 250, 0.9);
+            border-radius: 8px;
+            padding: 10px;
+            height: 60px;
             overflow-y: auto;
-            font-size: 0.9em;
-            line-height: 1.5;
-            margin-bottom: 20px;
+            font-size: 0.8em;
+            line-height: 1.3;
+            margin-top: 10px;
         }
 
         .log-entry {
-            margin-bottom: 8px;
-            padding: 5px 8px;
-            border-radius: 6px;
-            background: rgba(255,255,255,0.7);
+            margin-bottom: 3px;
+            padding: 2px 5px;
+            border-radius: 4px;
         }
 
         .log-player {
@@ -382,52 +481,58 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* レスポンシブ調整 */
         @media (max-width: 480px) {
-            .container {
-                border-radius: 0;
+            .battle-area {
+                height: calc(100vh - 70px - 180px);
             }
             
-            .game-screen {
+            .enemy-image-large {
+                width: clamp(150px, 45vw, 250px);
+                height: clamp(150px, 45vw, 250px);
+            }
+            
+            .command-area {
                 padding: 10px;
             }
             
             .actions {
-                gap: 10px;
+                gap: 8px;
             }
             
             .action-btn {
                 padding: 15px 8px;
                 font-size: 0.85em;
-                min-height: 60px;
+                min-height: 55px;
             }
             
-            .battle-log {
-                height: 150px;
-                font-size: 0.85em;
+            .player-stats-mini {
+                padding: 10px;
+                min-width: 160px;
             }
-
-            .character-image, .enemy-image {
-                width: 60px;
-                height: 60px;
+            
+            .player-image-mini {
+                width: 40px;
+                height: 40px;
             }
         }
 
         @media (orientation: landscape) and (max-height: 500px) {
-            .title-screen {
-                padding: 20px;
+            .battle-area {
+                height: calc(100vh - 60px - 160px);
             }
             
-            .game-header {
-                margin-bottom: 10px;
-                padding: 5px 0;
+            .enemy-image-large {
+                width: clamp(120px, 35vw, 200px);
+                height: clamp(120px, 35vw, 200px);
             }
             
-            .stats {
-                margin-bottom: 10px;
+            .command-area {
+                padding: 8px;
             }
             
-            .battle-log {
-                height: 120px;
+            .battle-log-mini {
+                height: 40px;
             }
         }
     </style>
@@ -464,38 +569,53 @@
                 <p>Level: <span id="playerLevel">1</span> | XP: <span id="playerXP">0</span>/100</p>
             </div>
 
-            <div class="stats">
-                <div class="player-stats">
-                    <div class="character-display">
-                        <img id="playerImage" class="character-image" src="images/pazclear-character.png" alt="PAZCLEAR" onerror="this.style.display='none'">
-                        <div class="character-info">
-                            <h3>🔬 PAZCLEAR Agent</h3>
-                            <div>HP: <span id="playerHP">100</span>/100</div>
-                            <div>Attack Power: <span id="playerAttack">20</span></div>
+            <!-- 🎨 新しいバトルエリア -->
+            <div class="battle-area">
+                <!-- プレイヤー情報（左上） -->
+                <div class="player-stats-mini">
+                    <img id="playerImageMini" class="player-image-mini" src="images/pazclear-character.png" alt="PAZCLEAR" onerror="this.style.display='none'">
+                    <div class="player-info-mini">
+                        <h4>🔬 PAZCLEAR Agent</h4>
+                        <div>HP: <span id="playerHP">100</span>/100 | ATK: <span id="playerAttack">20</span></div>
+                        <div class="hp-bar-mini">
+                            <div id="playerHPBarMini" class="hp-fill-mini" style="width: 100%"></div>
                         </div>
-                    </div>
-                    <div class="hp-bar">
-                        <div id="playerHPBar" class="hp-fill" style="width: 100%"></div>
                     </div>
                 </div>
 
-                <div class="enemy-stats">
-                    <div class="character-display">
-                        <img id="enemyImage" class="enemy-image" src="images/ecoli.png" alt="Enemy" onerror="this.style.display='none'">
-                        <div class="character-info">
-                            <h3 id="currentEnemyName">🦠 Enemy</h3>
-                            <div>HP: <span id="enemyHP">50</span>/<span id="enemyMaxHP">50</span>
-                                <span id="biofilmStatus" class="biofilm-indicator biofilm-inactive">Planktonic</span>
-                            </div>
-                            <div id="enemyInfo">Status: Normal</div>
-                        </div>
+                <!-- 敵キャラ大表示 -->
+                <div class="enemy-showcase">
+                    <div class="enemy-name-large" id="enemyNameLarge">🦠 Enemy</div>
+                    <img id="enemyImageLarge" class="enemy-image-large" src="images/ecoli.png" alt="Enemy" onerror="this.style.display='none'">
+                    <div id="biofilmIndicatorLarge" class="biofilm-indicator-large inactive">Planktonic</div>
+                </div>
+
+                <!-- 敵ステータス（下部オーバーレイ） -->
+                <div class="stats-overlay">
+                    <div class="hp-display">
+                        HP: <span id="enemyHP">50</span>/<span id="enemyMaxHP">50</span>
                     </div>
-                    <div class="hp-bar">
-                        <div id="enemyHPBar" class="hp-fill enemy-hp-fill" style="width: 100%"></div>
+                    <div class="hp-bar-large">
+                        <div id="enemyHPBarLarge" class="hp-fill-large" style="width: 100%"></div>
                     </div>
+                    <div id="enemyInfoLarge">Status: Normal</div>
                 </div>
             </div>
 
+            <!-- コマンドエリア（下部固定） -->
+            <div class="command-area">
+                <div class="actions">
+                    <button class="action-btn" onclick="playerAttack()">⚔️ ATTACK</button>
+                    <button class="action-btn" onclick="breakBiofilm()">🛡️ BREAK BIOFILM</button>
+                    <button class="action-btn" onclick="quorumQuenching()">📡 QUORUM QUENCHING</button>
+                    <button class="action-btn ultimate-btn" onclick="globalCompliance()" id="ultimateBtn">
+                        🌐 GLOBAL COMPLIANCE PROTOCOL (3 uses)
+                    </button>
+                </div>
+                
+                <div class="battle-log-mini" id="battleLog"></div>
+            </div>
+        </div>
             <div class="actions">
                 <button class="action-btn" onclick="playerAttack()">⚔️ ATTACK</button>
                 <button class="action-btn" onclick="breakBiofilm()">🛡️ BREAK BIOFILM</button>
@@ -849,53 +969,56 @@
         }
 
         function updateUI() {
-            const player = gameState.player;
-            const enemy = gameState.currentEnemy;
-            
-            // Player stats
-            document.getElementById('playerHP').textContent = player.hp;
-            document.getElementById('playerHPBar').style.width = `${(player.hp / player.maxHP) * 100}%`;
-            document.getElementById('playerAttack').textContent = player.attack;
-            document.getElementById('playerLevel').textContent = player.level;
-            document.getElementById('playerXP').textContent = player.xp;
-            
-            // Enemy stats
-            if (enemy) {
-                document.getElementById('enemyName').textContent = enemy.name;
-                document.getElementById('currentEnemyName').textContent = `🦠 ${enemy.name}`;
-                document.getElementById('enemyHP').textContent = enemy.hp;
-                document.getElementById('enemyMaxHP').textContent = enemy.maxHP;
-                document.getElementById('enemyHPBar').style.width = `${(enemy.hp / enemy.maxHP) * 100}%`;
-                
-                // Update enemy image
-                const enemyImage = document.getElementById('enemyImage');
-                enemyImage.src = enemy.image;
-                enemyImage.alt = enemy.name;
-                
-                const biofilmStatus = document.getElementById('biofilmStatus');
-                if (enemy.hasBiofilm) {
-                    biofilmStatus.textContent = 'Biofilm';
-                    biofilmStatus.className = 'biofilm-indicator biofilm-active';
-                } else {
-                    biofilmStatus.textContent = 'Planktonic';
-                    biofilmStatus.className = 'biofilm-indicator biofilm-inactive';
-                }
-                
-                let statusText = 'Normal';
-                if (gameState.quorumQuenchingTurns > 0) {
-                    statusText += ` | Quorum Disrupted (${gameState.quorumQuenchingTurns})`;
-                }
-                if (gameState.complianceProtocolTurns > 0) {
-                    statusText += ` | Compliance Active (${gameState.complianceProtocolTurns})`;
-                }
-                document.getElementById('enemyInfo').textContent = `Status: ${statusText}`;
-            }
-            
-            // Ultimate button
-            const ultimateBtn = document.getElementById('ultimateBtn');
-            ultimateBtn.textContent = `🌐 GLOBAL COMPLIANCE PROTOCOL (${player.ultimateUses} uses)`;
-            ultimateBtn.disabled = player.ultimateUses <= 0;
+    const player = gameState.player;
+    const enemy = gameState.currentEnemy;
+    
+    // Player stats (mini version)
+    document.getElementById('playerHP').textContent = player.hp;
+    document.getElementById('playerHPBarMini').style.width = `${(player.hp / player.maxHP) * 100}%`;
+    document.getElementById('playerAttack').textContent = player.attack;
+    document.getElementById('playerLevel').textContent = player.level;
+    document.getElementById('playerXP').textContent = player.xp;
+    
+    // Enemy stats (large display)
+    if (enemy) {
+        document.getElementById('enemyName').textContent = enemy.name;
+        document.getElementById('enemyNameLarge').textContent = `🦠 ${enemy.name}`;
+        document.getElementById('enemyHP').textContent = enemy.hp;
+        document.getElementById('enemyMaxHP').textContent = enemy.maxHP;
+        document.getElementById('enemyHPBarLarge').style.width = `${(enemy.hp / enemy.maxHP) * 100}%`;
+        
+        // Update large enemy image
+        const enemyImageLarge = document.getElementById('enemyImageLarge');
+        enemyImageLarge.src = enemy.image;
+        enemyImageLarge.alt = enemy.name;
+        
+        // Biofilm effect
+        const biofilmIndicator = document.getElementById('biofilmIndicatorLarge');
+        if (enemy.hasBiofilm) {
+            biofilmIndicator.textContent = 'BIOFILM';
+            biofilmIndicator.className = 'biofilm-indicator-large';
+            enemyImageLarge.classList.add('biofilm');
+        } else {
+            biofilmIndicator.textContent = 'Planktonic';
+            biofilmIndicator.className = 'biofilm-indicator-large inactive';
+            enemyImageLarge.classList.remove('biofilm');
         }
+        
+        let statusText = 'Normal';
+        if (gameState.quorumQuenchingTurns > 0) {
+            statusText += ` | Quorum Disrupted (${gameState.quorumQuenchingTurns})`;
+        }
+        if (gameState.complianceProtocolTurns > 0) {
+            statusText += ` | Compliance Active (${gameState.complianceProtocolTurns})`;
+        }
+        document.getElementById('enemyInfoLarge').textContent = `Status: ${statusText}`;
+    }
+    
+    // Ultimate button
+    const ultimateBtn = document.getElementById('ultimateBtn');
+    ultimateBtn.textContent = `🌐 GLOBAL COMPLIANCE PROTOCOL (${player.ultimateUses} uses)`;
+    ultimateBtn.disabled = player.ultimateUses <= 0;
+}
 
         // Prevent zoom and improve touch experience
         document.addEventListener('touchstart', function(e) {
