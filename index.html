@@ -587,6 +587,21 @@
                 min-height: 50px;
             }
         }
+
+        /* HPゲージを確実に前面に表示 */
+.stats-overlay {
+    z-index: 15 !important;
+}
+
+.hp-bar-large {
+    position: relative;
+    z-index: 16 !important;
+}
+
+.hp-display {
+    position: relative;
+    z-index: 16 !important;
+}
     </style>
 </head>
 <body>
@@ -1160,17 +1175,3 @@
 </body>
 </html>
 
-/* HPゲージを確実に前面に表示 */
-.stats-overlay {
-    z-index: 15 !important;
-}
-
-.hp-bar-large {
-    position: relative;
-    z-index: 16 !important;
-}
-
-.hp-display {
-    position: relative;
-    z-index: 16 !important;
-}
