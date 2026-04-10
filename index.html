@@ -1173,10 +1173,11 @@
             ultimateBtn.disabled = player.ultimateUses <= 0;
             
            
-           // Heal button（無限使用版）
+           // 👇 Heal button（安全な書き方）
             const healBtn = document.getElementById('healBtn');
-            healBtn.textContent = `💊 HEAL`; // 使用回数表示を削除
-            healBtn.disabled = player.hp >= player.maxHP; // 満タン時のみ無効
+            if (healBtn) {
+                healBtn.textContent = `💊 HEAL`;
+                healBtn.disabled = player.hp >= player.maxHP;
         }
 
         // Prevent zoom and improve touch experience
