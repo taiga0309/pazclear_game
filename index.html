@@ -862,6 +862,31 @@ const enemies = [
             const ultimateBtn = document.getElementById('ultimateBtn');
             ultimateBtn.textContent = `🌐 GLOBAL COMPLIANCE PROTOCOL (${player.ultimateUses} uses)`;
             ultimateBtn.disabled = player.ultimateUses <= 0;
+
+            function updateUI() {
+    const player = gameState.player;
+    const enemy = gameState.currentEnemy;
+    
+    // 既存のプレイヤー統計更新コード...
+    
+    // Enemy stats
+    if (enemy) {
+        document.getElementById('enemyName').textContent = enemy.name;
+        document.getElementById('currentEnemyName').textContent = `🦠 ${enemy.name}`;
+        document.getElementById('enemyHP').textContent = enemy.hp;
+        document.getElementById('enemyMaxHP').textContent = enemy.maxHP;
+        document.getElementById('enemyHPBar').style.width = `${(enemy.hp / enemy.maxHP) * 100}%`;
+        
+        // 👈 この部分を追加
+        const enemyImage = document.getElementById('enemyImage');
+        enemyImage.src = enemy.image;
+        enemyImage.alt = enemy.name;
+        
+        // 既存のバイオフィルム状態更新コード...
+    }
+    
+    // 既存のアルティメットボタン更新コード...
+}
         }
 
                 // Prevent zoom and improve touch experience
