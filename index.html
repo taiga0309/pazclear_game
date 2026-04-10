@@ -543,77 +543,60 @@
         };
 
         // Enemy Templates
-        const enemies = [
-            {
-                name: "E. coli",
-                hp: 40,
-                maxHP: 40,
-                attack: 15,
-                hasBiofilm: false,
-                biofilmTurns: 3,
-                currentBiofilmTurns: 0,
-                canMultiply: true,
-                multiplyChance: 0.3,
-                xpReward: 20
-            },
-            {
-                name: "Salmonella",
-                hp: 60,
-                maxHP: 60,
-                attack: 18,
-                hasBiofilm: false,
-                biofilmTurns: 4,
-                currentBiofilmTurns: 0,
-                canMultiply: false,
-                xpReward: 30
-            },
-            {
-                name: "Enterobacter",
-                hp: 50,
-                maxHP: 50,
-                attack: 16,
-                hasBiofilm: false,
-                biofilmTurns: 3,
-                currentBiofilmTurns: 0,
-                canMultiply: true,
-                multiplyChance: 0.4,
-                xpReward: 25
-            },
-            {
-                name: "Listeria",
-                hp: 80,
-                maxHP: 80,
-                attack: 20,
-                hasBiofilm: false,
-                biofilmTurns: 2,
-                currentBiofilmTurns: 0,
-                canMultiply: false,
-                xpReward: 40
-            },
-            {
-                name: "Legionella",
-                hp: 70,
-                maxHP: 70,
-                attack: 22,
-                hasBiofilm: false,
-                biofilmTurns: 3,
-                currentBiofilmTurns: 0,
-                canMultiply: false,
-                damageBonus: 0,
-                xpReward: 35
-            },
-            {
-                name: "Pseudomonas (BOSS)",
-                hp: 120,
-                maxHP: 120,
-                attack: 25,
-                hasBiofilm: true,
-                biofilmTurns: 0,
-                currentBiofilmTurns: 0,
-                canMultiply: false,
-                xpReward: 100
-            }
-        ];
+// Enemy Templates（画像があるキャラのみ）
+const enemies = [
+    {
+        name: "E. coli",
+        image: "images/ecoli.png",        // 👈 image属性を追加
+        hp: 40,
+        maxHP: 40,
+        attack: 15,
+        hasBiofilm: false,
+        biofilmTurns: 3,
+        currentBiofilmTurns: 0,
+        canMultiply: true,
+        multiplyChance: 0.3,
+        xpReward: 20
+    },
+    {
+        name: "Salmonella",
+        image: "images/salmonella.png",   // 👈 image属性を追加
+        hp: 60,
+        maxHP: 60,
+        attack: 18,
+        hasBiofilm: false,
+        biofilmTurns: 4,
+        currentBiofilmTurns: 0,
+        canMultiply: false,
+        xpReward: 30
+    },
+    {
+        name: "Enterobacter",
+        image: "images/enterobacter.png", // 👈 image属性を追加
+        hp: 50,
+        maxHP: 50,
+        attack: 16,
+        hasBiofilm: false,
+        biofilmTurns: 3,
+        currentBiofilmTurns: 0,
+        canMultiply: true,
+        multiplyChance: 0.4,
+        xpReward: 25
+    },
+    // Listeria と Legionella を削除
+    {
+        name: "Pseudomonas (BOSS)",
+        image: "images/pseudomonas.png",  // 👈 image属性を追加
+        hp: 120,
+        maxHP: 120,
+        attack: 25,
+        hasBiofilm: true,
+        biofilmTurns: 0,
+        currentBiofilmTurns: 0,
+        canMultiply: false,
+        xpReward: 100
+    }
+];
 
         function startGame() {
             showLoading();
