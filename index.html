@@ -167,9 +167,38 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
+        .character-display {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .character-image, .enemy-image {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #1976d2;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            flex-shrink: 0;
+        }
+
+        .character-image {
+            border-color: #4caf50;
+        }
+
+        .enemy-image {
+            border-color: #f44336;
+        }
+
+        .character-info {
+            flex: 1;
+        }
+
         .player-stats h3, .enemy-stats h3 {
             font-size: 1.1em;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             color: #1976d2;
         }
 
@@ -305,10 +334,9 @@
             text-align: center;
             padding: 60px 20px;
             height: 100vh;
-            display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
+            flex-direction: column;
         }
 
         .victory-screen h2 {
@@ -323,15 +351,10 @@
             margin-bottom: 20px;
         }
 
-        .victory-screen, .defeat-screen {
-            display: none;
-        }
-
         .victory-screen.active, .defeat-screen.active {
             display: flex;
         }
 
-        /* Loading indicator */
         .loading {
             position: fixed;
             top: 0;
@@ -359,7 +382,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Responsive adjustments */
         @media (max-width: 480px) {
             .container {
                 border-radius: 0;
@@ -382,6 +404,11 @@
             .battle-log {
                 height: 150px;
                 font-size: 0.85em;
+            }
+
+            .character-image, .enemy-image {
+                width: 60px;
+                height: 60px;
             }
         }
 
@@ -439,23 +466,33 @@
 
             <div class="stats">
                 <div class="player-stats">
-                    <h3>🔬 PAZCLEAR Agent</h3>
-                    <div>HP: <span id="playerHP">100</span>/100</div>
+                    <div class="character-display">
+                        <img id="playerImage" class="character-image" src="images/pazclear-character.png" alt="PAZCLEAR" onerror="this.style.display='none'">
+                        <div class="character-info">
+                            <h3>🔬 PAZCLEAR Agent</h3>
+                            <div>HP: <span id="playerHP">100</span>/100</div>
+                            <div>Attack Power: <span id="playerAttack">20</span></div>
+                        </div>
+                    </div>
                     <div class="hp-bar">
                         <div id="playerHPBar" class="hp-fill" style="width: 100%"></div>
                     </div>
-                    <div>Attack Power: <span id="playerAttack">20</span></div>
                 </div>
 
                 <div class="enemy-stats">
-                    <h3 id="currentEnemyName">🦠 Enemy</h3>
-                    <div>HP: <span id="enemyHP">50</span>/<span id="enemyMaxHP">50</span>
-                        <span id="biofilmStatus" class="biofilm-indicator biofilm-inactive">Planktonic</span>
+                    <div class="character-display">
+                        <img id="enemyImage" class="enemy-image" src="images/ecoli.png" alt="Enemy" onerror="this.style.display='none'">
+                        <div class="character-info">
+                            <h3 id="currentEnemyName">🦠 Enemy</h3>
+                            <div>HP: <span id="enemyHP">50</span>/<span id="enemyMaxHP">50</span>
+                                <span id="biofilmStatus" class="biofilm-indicator biofilm-inactive">Planktonic</span>
+                            </div>
+                            <div id="enemyInfo">Status: Normal</div>
+                        </div>
                     </div>
                     <div class="hp-bar">
                         <div id="enemyHPBar" class="hp-fill enemy-hp-fill" style="width: 100%"></div>
                     </div>
-                    <div id="enemyInfo">Status: Normal</div>
                 </div>
             </div>
 
@@ -542,61 +579,59 @@
             battleLog: []
         };
 
-        // Enemy Templates
-// Enemy Templates（画像があるキャラのみ）
-const enemies = [
-    {
-        name: "E. coli",
-        image: "images/ecoli.png",        // 👈 image属性を追加
-        hp: 40,
-        maxHP: 40,
-        attack: 15,
-        hasBiofilm: false,
-        biofilmTurns: 3,
-        currentBiofilmTurns: 0,
-        canMultiply: true,
-        multiplyChance: 0.3,
-        xpReward: 20
-    },
-    {
-        name: "Salmonella",
-        image: "images/salmonella.png",   // 👈 image属性を追加
-        hp: 60,
-        maxHP: 60,
-        attack: 18,
-        hasBiofilm: false,
-        biofilmTurns: 4,
-        currentBiofilmTurns: 0,
-        canMultiply: false,
-        xpReward: 30
-    },
-    {
-        name: "Enterobacter",
-        image: "images/enterobacter.png", // 👈 image属性を追加
-        hp: 50,
-        maxHP: 50,
-        attack: 16,
-        hasBiofilm: false,
-        biofilmTurns: 3,
-        currentBiofilmTurns: 0,
-        canMultiply: true,
-        multiplyChance: 0.4,
-        xpReward: 25
-    },
-    // Listeria と Legionella を削除
-    {
-        name: "Pseudomonas (BOSS)",
-        image: "images/pseudomonas.png",  // 👈 image属性を追加
-        hp: 120,
-        maxHP: 120,
-        attack: 25,
-        hasBiofilm: true,
-        biofilmTurns: 0,
-        currentBiofilmTurns: 0,
-        canMultiply: false,
-        xpReward: 100
-    }
-];
+        // Enemy Templates（画像があるキャラのみ）
+        const enemies = [
+            {
+                name: "E. coli",
+                image: "images/ecoli.png",
+                hp: 40,
+                maxHP: 40,
+                attack: 15,
+                hasBiofilm: false,
+                biofilmTurns: 3,
+                currentBiofilmTurns: 0,
+                canMultiply: true,
+                multiplyChance: 0.3,
+                xpReward: 20
+            },
+            {
+                name: "Salmonella",
+                image: "images/salmonella.png",
+                hp: 60,
+                maxHP: 60,
+                attack: 18,
+                hasBiofilm: false,
+                biofilmTurns: 4,
+                currentBiofilmTurns: 0,
+                canMultiply: false,
+                xpReward: 30
+            },
+            {
+                name: "Enterobacter",
+                image: "images/enterobacter.png",
+                hp: 50,
+                maxHP: 50,
+                attack: 16,
+                hasBiofilm: false,
+                biofilmTurns: 3,
+                currentBiofilmTurns: 0,
+                canMultiply: true,
+                multiplyChance: 0.4,
+                xpReward: 25
+            },
+            {
+                name: "Pseudomonas (BOSS)",
+                image: "images/pseudomonas.png",
+                hp: 120,
+                maxHP: 120,
+                attack: 25,
+                hasBiofilm: true,
+                biofilmTurns: 0,
+                currentBiofilmTurns: 0,
+                canMultiply: false,
+                xpReward: 100
+            }
+        ];
 
         function startGame() {
             showLoading();
@@ -741,16 +776,8 @@ const enemies = [
                 }
             }
             
-            // Legionella damage bonus
-            if (enemy.name === "Legionella") {
-                enemy.damageBonus = (enemy.damageBonus || 0) + 2;
-                if (enemy.damageBonus > 0) {
-                    addLog(`Legionella becomes more virulent! (+${enemy.damageBonus} damage)`, 'enemy');
-                }
-            }
-            
             // Enemy attack
-            let damage = enemy.attack + (enemy.damageBonus || 0);
+            let damage = enemy.attack;
             gameState.player.hp -= damage;
             addLog(`${enemy.name} attacks for ${damage} damage!`, 'enemy');
             
@@ -802,7 +829,8 @@ const enemies = [
             document.getElementById('victoryScreen').style.display = 'none';
             document.getElementById('defeatScreen').style.display = 'none';
             document.getElementById('victoryScreen').classList.remove('active');
-            document.getElementById('defeatScreen').classList.remove('active');
+
+                    document.getElementById('defeatScreen').classList.remove('active');
             document.getElementById('titleScreen').style.display = 'block';
         }
 
@@ -839,6 +867,11 @@ const enemies = [
                 document.getElementById('enemyMaxHP').textContent = enemy.maxHP;
                 document.getElementById('enemyHPBar').style.width = `${(enemy.hp / enemy.maxHP) * 100}%`;
                 
+                // Update enemy image
+                const enemyImage = document.getElementById('enemyImage');
+                enemyImage.src = enemy.image;
+                enemyImage.alt = enemy.name;
+                
                 const biofilmStatus = document.getElementById('biofilmStatus');
                 if (enemy.hasBiofilm) {
                     biofilmStatus.textContent = 'Biofilm';
@@ -862,34 +895,9 @@ const enemies = [
             const ultimateBtn = document.getElementById('ultimateBtn');
             ultimateBtn.textContent = `🌐 GLOBAL COMPLIANCE PROTOCOL (${player.ultimateUses} uses)`;
             ultimateBtn.disabled = player.ultimateUses <= 0;
-
-            function updateUI() {
-    const player = gameState.player;
-    const enemy = gameState.currentEnemy;
-    
-    // 既存のプレイヤー統計更新コード...
-    
-    // Enemy stats
-    if (enemy) {
-        document.getElementById('enemyName').textContent = enemy.name;
-        document.getElementById('currentEnemyName').textContent = `🦠 ${enemy.name}`;
-        document.getElementById('enemyHP').textContent = enemy.hp;
-        document.getElementById('enemyMaxHP').textContent = enemy.maxHP;
-        document.getElementById('enemyHPBar').style.width = `${(enemy.hp / enemy.maxHP) * 100}%`;
-        
-        // 👈 この部分を追加
-        const enemyImage = document.getElementById('enemyImage');
-        enemyImage.src = enemy.image;
-        enemyImage.alt = enemy.name;
-        
-        // 既存のバイオフィルム状態更新コード...
-    }
-    
-    // 既存のアルティメットボタン更新コード...
-}
         }
 
-                // Prevent zoom and improve touch experience
+        // Prevent zoom and improve touch experience
         document.addEventListener('touchstart', function(e) {
             if (e.touches.length > 1) {
                 e.preventDefault();
