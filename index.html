@@ -7,18 +7,16 @@
     
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#1976d2">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="PAZCLEAR">
     <meta name="description" content="Industrial water system microbial control game">
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
     
-    <!-- Icons -->
-    <link rel="apple-touch-icon" href="icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="icon-512x512.png">
+    <!-- Simple Icon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦠</text></svg>">
     
     <style>
         * {
@@ -264,7 +262,7 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.15);
             min-width: 300px;
             text-align: center;
-            z-index: 10; 
+            z-index: 15;
         }
 
         .hp-display {
@@ -272,6 +270,8 @@
             font-weight: bold;
             margin-bottom: 10px;
             color: #333;
+            position: relative;
+            z-index: 16;
         }
 
         .hp-bar-large {
@@ -282,6 +282,8 @@
             overflow: hidden;
             margin: 8px 0;
             border: 2px solid #ccc;
+            position: relative;
+            z-index: 16;
         }
 
         .hp-fill-large {
@@ -514,145 +516,137 @@
         }
 
         /* iPhone対応の改良版モバイルCSS */
-@media (max-width: 480px) {
-    .battle-area {
-        height: calc(100vh - 60px - 200px); /* ヘッダー高さを調整 */
-        padding: 10px;
-    }
-    
-    .enemy-image-large {
-        width: clamp(120px, 40vw, 200px);
-        height: clamp(120px, 40vw, 200px);
-    }
-    
-    .enemy-name-large {
-        top: -30px; /* 位置を調整 */
-        font-size: clamp(1em, 3.5vw, 1.2em);
-        padding: 8px 15px;
-    }
-    
-    .stats-overlay {
-        bottom: 10px;
-        min-width: 250px;
-        padding: 10px 15px;
-    }
-    
-    .player-stats-mini {
-        padding: 8px;
-        min-width: 140px;
-        top: 10px;
-        left: 10px;
-    }
-    
-    .player-image-mini {
-        width: 35px;
-        height: 35px;
-    }
-    
-    .command-area {
-        padding: 10px;
-        max-height: 45vh;
-    }
-    
-    .battle-log-mini {
-        height: 70px;
-        font-size: 0.75em;
-        margin-bottom: 10px;
-        padding: 8px;
-    }
-    
-    .actions {
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-    }
-    
-    .action-btn {
-        padding: 12px 6px;
-        font-size: 0.7em;
-        min-height: 50px;
-    }
-    
-    .ultimate-btn {
-        grid-column: 1 / -1;
-    }
-}
+        @media (max-width: 480px) {
+            .battle-area {
+                height: calc(100vh - 60px - 200px);
+                padding: 10px;
+            }
+            
+            .enemy-image-large {
+                width: clamp(120px, 40vw, 200px);
+                height: clamp(120px, 40vw, 200px);
+            }
+            
+            .enemy-name-large {
+                top: -30px;
+                font-size: clamp(1em, 3.5vw, 1.2em);
+                padding: 8px 15px;
+            }
+            
+            .stats-overlay {
+                bottom: 10px;
+                min-width: 250px;
+                padding: 10px 15px;
+            }
+            
+            .player-stats-mini {
+                padding: 8px;
+                min-width: 140px;
+                top: 10px;
+                left: 10px;
+            }
+            
+            .player-image-mini {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .command-area {
+                padding: 10px;
+                max-height: 45vh;
+            }
+            
+            .battle-log-mini {
+                height: 70px;
+                font-size: 0.75em;
+                margin-bottom: 10px;
+                padding: 8px;
+            }
+            
+            .actions {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            
+            .action-btn {
+                padding: 12px 6px;
+                font-size: 0.7em;
+                min-height: 50px;
+            }
+            
+            .ultimate-btn {
+                grid-column: 1 / -1;
+            }
+        }
 
-/* iPhone SE などの小さい画面用 */
-@media (max-width: 375px) {
-    .game-header {
-        padding: 10px;
-    }
-    
-    .game-header h2 {
-        font-size: 1em;
-    }
-    
-    .battle-area {
-        height: calc(100vh - 50px - 180px);
-    }
-    
-    .enemy-image-large {
-        width: clamp(100px, 35vw, 160px);
-        height: clamp(100px, 35vw, 160px);
-    }
-    
-    .stats-overlay {
-        min-width: 200px;
-        padding: 8px 12px;
-    }
-    
-    .hp-display {
-        font-size: 1em;
-    }
-    
-    .player-stats-mini {
-        min-width: 120px;
-    }
-}
+        /* iPhone SE などの小さい画面用 */
+        @media (max-width: 375px) {
+            .game-header {
+                padding: 10px;
+            }
+            
+            .game-header h2 {
+                font-size: 1em;
+            }
+            
+            .battle-area {
+                height: calc(100vh - 50px - 180px);
+            }
+            
+            .enemy-image-large {
+                width: clamp(100px, 35vw, 160px);
+                height: clamp(100px, 35vw, 160px);
+            }
+            
+            .stats-overlay {
+                min-width: 200px;
+                padding: 8px 12px;
+            }
+            
+            .hp-display {
+                font-size: 1em;
+            }
+            
+            .player-stats-mini {
+                min-width: 120px;
+            }
+        }
 
-/* 横向き対応 */
-@media (orientation: landscape) and (max-height: 500px) {
-    .battle-area {
-        height: calc(100vh - 50px - 160px);
-    }
-    
-    .enemy-image-large {
-        width: clamp(100px, 30vw, 180px);
-        height: clamp(100px, 30vw, 180px);
-    }
-    
-    .command-area {
-        padding: 6px;
-        max-height: 50vh;
-    }
-    
-    .battle-log-mini {
-        height: 50px;
-        font-size: 0.7em;
-        margin-bottom: 6px;
-    }
-    
-    .action-btn {
-        padding: 8px 4px;
-        min-height: 45px;
-        font-size: 0.65em;
-    }
-}
+        /* 横向き対応 */
+        @media (orientation: landscape) and (max-height: 500px) {
+            .battle-area {
+                height: calc(100vh - 50px - 160px);
+            }
+            
+            .enemy-image-large {
+                width: clamp(100px, 30vw, 180px);
+                height: clamp(100px, 30vw, 180px);
+            }
+            
+            .command-area {
+                padding: 6px;
+                max-height: 50vh;
+            }
+            
+            .battle-log-mini {
+                height: 50px;
+                font-size: 0.7em;
+                margin-bottom: 6px;
+            }
+            
+            .action-btn {
+                padding: 8px 4px;
+                min-height: 45px;
+                font-size: 0.65em;
+            }
+        }
 
-        /* HPゲージを確実に前面に表示 */
-.stats-overlay {
-    z-index: 15 !important;
-}
-
-.hp-bar-large {
-    position: relative;
-    z-index: 16 !important;
-}
-
-.hp-display {
-    position: relative;
-    z-index: 16 !important;
-}
+        /* 回復ボタンを確実に表示 */
+        #healBtn {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
     </style>
 </head>
 <body>
@@ -722,12 +716,12 @@
 
             <!-- コマンドエリア（下部固定） -->
             <div class="command-area">
-                <!-- バトルログ（コマンドの上） -->
+                <!-- バトルログ（一番上） -->
                 <div class="battle-log-mini" id="battleLog">
                     <div class="log-entry log-system">Battle started! Choose your action.</div>
                 </div>
                 
-                <!-- コマンドボタン -->
+                <!-- コマンドボタン（ログの下） -->
                 <div class="actions">
                     <button class="action-btn" onclick="playerAttack()">⚔️ ATTACK</button>
                     <button class="action-btn" onclick="breakBiofilm()">🛡️ BREAK BIOFILM</button>
@@ -802,8 +796,7 @@
                 attack: 20,
                 level: 1,
                 xp: 0,
-                ultimateUses: 3,
-                healUses: 3
+                ultimateUses: 3
             },
             currentEnemy: null,
             enemyIndex: 0,
@@ -881,7 +874,7 @@
         }
 
         function hideLoading() {
-            document.getElementById('loading').style.display = 'none';
+                        document.getElementById('loading').style.display = 'none';
         }
 
         function initializeGame() {
@@ -891,7 +884,7 @@
                 attack: 20,
                 level: 1,
                 xp: 0,
-                ultimateUses: 3,
+                ultimateUses: 3
             };
             gameState.enemyIndex = 0;
             gameState.quorumQuenchingTurns = 0;
@@ -934,7 +927,7 @@
             
             enemy.hp -= damage;
             
-                        if (enemy.hp <= 0) {
+            if (enemy.hp <= 0) {
                 enemyDefeated();
                 return;
             }
@@ -961,27 +954,26 @@
             enemyTurn();
         }
 
-    function healPlayer() {
-    const player = gameState.player;
-    
-    if (player.hp >= player.maxHP) {
-        addLog(`PAZCLEAR is already at full health!`, 'system');
-        return;
-    }
-    
-    // 回復量の計算（最大HPの40%、最低20）
-    const healAmount = Math.max(20, Math.floor(player.maxHP * 0.4));
-    const actualHeal = Math.min(healAmount, player.maxHP - player.hp);
-    
-    player.hp += actualHeal;
-    // player.healUses--; // 👈 この行を削除（無限使用）
-    
-    addLog(`PAZCLEAR uses emergency medical kit! Restored ${actualHeal} HP!`, 'player');
-    // addLog(`Healing items remaining: ${player.healUses}`, 'system'); // 👈 この行も削除
-    
-    // 回復にもターンを消費
-    enemyTurn();
-}
+        function healPlayer() {
+            const player = gameState.player;
+            
+            if (player.hp >= player.maxHP) {
+                addLog(`PAZCLEAR is already at full health!`, 'system');
+                return;
+            }
+            
+            // 回復量の計算（最大HPの40%、最低20）
+            const healAmount = Math.max(20, Math.floor(player.maxHP * 0.4));
+            const actualHeal = Math.min(healAmount, player.maxHP - player.hp);
+            
+            player.hp += actualHeal;
+            
+            addLog(`PAZCLEAR uses emergency medical kit! Restored ${actualHeal} HP!`, 'player');
+            
+            // 回復にもターンを消費
+            enemyTurn();
+        }
+
         function globalCompliance() {
             if (gameState.player.ultimateUses <= 0) {
                 addLog(`Global Compliance Protocol has no remaining uses!`, 'system');
@@ -1059,7 +1051,6 @@
                 gameState.player.maxHP += 20;
                 gameState.player.hp = gameState.player.maxHP; // Full heal on level up
                 addLog(`LEVEL UP! Attack increased to ${gameState.player.attack}!`, 'system');
-                addLog(`Medical supplies restocked! Heal uses: ${gameState.player.healUses}`, 'system');
             }
             
             gameState.enemyIndex++;
@@ -1172,12 +1163,12 @@
             ultimateBtn.textContent = `🌐 GLOBAL COMPLIANCE PROTOCOL (${player.ultimateUses} uses)`;
             ultimateBtn.disabled = player.ultimateUses <= 0;
             
-           
-           // 👇 Heal button（安全な書き方）
+            // Heal button（無限使用版）
             const healBtn = document.getElementById('healBtn');
             if (healBtn) {
                 healBtn.textContent = `💊 HEAL`;
                 healBtn.disabled = player.hp >= player.maxHP;
+            }
         }
 
         // Prevent zoom and improve touch experience
@@ -1219,4 +1210,3 @@
     </script>
 </body>
 </html>
-
